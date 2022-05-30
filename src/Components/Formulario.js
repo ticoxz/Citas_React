@@ -1,11 +1,22 @@
 import { useState, useEffect } from 'react';
+import Paciente from './Paciente';
+import Error from './Error';
 
-function Formulario() {
+function Formulario({ setPacientes, pacientes }) {
   const [nombre, setNombre] = useState('');
   const [propietario, setPropietario] = useState('');
   const [email, setEmail] = useState('');
   const [fecha, setFecha] = useState('');
   const [sintomas, setSintomas] = useState('');
+
+  const [error, setError] = useState(false);
+
+  const generarId = () => {
+    const random = Math.random().toString(36).substring(2);
+    const fecha = Date.now().toString(36);
+
+    return random + fecha;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -13,16 +24,39 @@ function Formulario() {
     // Validacion del form
     if ([nombre, propietario, email, fecha, sintomas].includes('')) {
       console.log('hay un campo vacios');
-    } else {
-      console.log('todos llenos');
+      setError(true);
+      return;
     }
+
+    setError(false);
+
+    //Objeto paciente
+    const objetoPaciente = {
+      nombre,
+      propietario,
+      email,
+      fecha,
+      sintomas,
+      id: generarId(),
+    };
+
+    console.log(objetoPaciente);
+    // setPacientes(nombre);
+    setPacientes([...pacientes, objetoPaciente]);
+
+    //reiniciar form
+    setNombre('');
+    setPropietario('');
+    setEmail('');
+    setFecha('');
+    setSintomas('');
   };
 
   return (
-    <div className='md:w-1/2 lg:w-2/5 mx-5'>
+    <div className='md:w-1/2 mx-5'>
       <div>
         <h2 className='font-black text-3xl text-center'>
-          Seguimiento pacientes
+          Seguimiento pacientess
         </h2>
 
         <p className='font-bold text-lg text-center my-5'>
@@ -33,6 +67,7 @@ function Formulario() {
         <form
           onSubmit={handleSubmit}
           className='bg-white shadow-lg rounded-lg py-10 px-5'>
+          {error && <Error mensaje='Todos los campos son obligatiorios' />}
           <div className='mx-[30px]'>
             <div className='mb-5'>
               <label htmlFor='mascota' className='block text-gray-700'>
